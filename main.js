@@ -5,6 +5,11 @@ import { markedTerminal } from 'marked-terminal';
 import { renderMermaidAscii } from 'beautiful-mermaid';
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf-8'));
 
 function getFilePathsFromArgs() {
   return process.argv.slice(2);
@@ -63,15 +68,31 @@ function readStdin() {
   });
 }
 
+function showVersion() {
+  console.log(packageJson.version);
+}
+
 async function main() {
   const filePaths = getFilePathsFromArgs();
 
+  // Check for -v/--version option
+  if (filePaths.includes('-v') || filePaths.includes('--version')) {
+    showVersion();
+    process.exit(0);
+  }
+
   if (filePaths.length === 0) {
+    // Check if stdin is a TTY (interactive terminal)
+    // If TTY, show usage. Otherwise, read from stdin.
+    if (process.stdin.isTTY) {
+      console.log('Usage: mema <markdown-file> [markdown-file2] ...\n       echo "..." | mema\n\nConverts markdown with mermaid diagrams to terminal output.\n\nOptions:\n  -v, --version    Show version number\n  -h, --help       Show usage information');
+      process.exit(1);
+    }
     const stdinData = await readStdin();
     if (stdinData.trim()) {
       renderMdmd(stdinData);
     } else {
-      console.log('Usage: mema <markdown-file> [markdown-file2] ...\n       echo "..." | mema\n\nConverts markdown with mermaid diagrams to terminal output.');
+      console.log('Usage: mema <markdown-file> [markdown-file2] ...\n       echo "..." | mema\n\nConverts markdown with mermaid diagrams to terminal output.\n\nOptions:\n  -v, --version    Show version number\n  -h, --help       Show usage information');
       process.exit(1);
     }
   } else {
