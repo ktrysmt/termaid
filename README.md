@@ -2,6 +2,10 @@
 
 Markdown with Mermaid diagrams to terminal output.
 
+## Author
+
+[ktrysmt](https://github.com/ktrysmt)
+
 ## Install
 
 ```bash
