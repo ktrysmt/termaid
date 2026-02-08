@@ -47,7 +47,7 @@ $ echo '# Hello\n\n```mermaid\nflowchart LR\n    A --> B\n```' | mema
     └───┘     └───┘
 ```
 
-### Uninstall
+## Uninstall
 
 ```bash
 npm remove -g @ktrysmt/mema
