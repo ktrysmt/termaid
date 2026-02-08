@@ -18,16 +18,33 @@ npm install -g git+https://github.com/ktrysmt/mema.git
 
 ### File input
 
-```bash
-mema <markdown-file>
-mema file1.md file2.md file3.md
+```
+$ mema test/test1.md
+# Hello
+
+This is markdown with mermaid:
+
+    ┌───┐     ┌───┐
+    │   │     │   │
+    │ A ├────►│ B │
+    │   │     │   │
+    └───┘     └───┘
+
+More text.
+
 ```
 
 ### Stdin input
 
-```bash
-echo "# Hello\n\n```mermaid\nflowchart LR\n    A-->B\n```" | mema
-cat README.md | mema
+```
+$ echo '# Hello\n\n```mermaid\nflowchart LR\n    A --> B\n```' | mema
+# Hello
+
+    ┌───┐     ┌───┐
+    │   │     │   │
+    │ A ├────►│ B │
+    │   │     │   │
+    └───┘     └───┘
 ```
 
 ### Uninstall
