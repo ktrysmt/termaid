@@ -1,4 +1,4 @@
-# termaid-cli
+# termaid
 
 > View mermaid-ed markdown in terminal
 
