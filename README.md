@@ -1,11 +1,11 @@
-# termaid
+# asciimaid
 
 > View mermaid-ed markdown in terminal
 
 ## Install/Update
 
 ```bash
-npm install -g termaid-cli
+npm install -g asciimaid-cli
 ```
 
 
@@ -14,7 +14,7 @@ npm install -g termaid-cli
 ### File input
 
 ```
-$ termaid test/test1.md
+$ asciimaid test/test1.md
 # Hello
 
 This is markdown with mermaid:
@@ -32,7 +32,7 @@ More text.
 ### test2.md - flowchart with decision
 
 ```
-$ termaid test/test2.md
+$ asciimaid test/test2.md
 # Hello
 
 This is markdown printed in the terminal.
@@ -70,7 +70,7 @@ More text after the diagram.
 ### test3.md - Complex Mermaid diagrams (English)
 
 ```
-$ termaid test/test3.md
+$ asciimaid test/test3.md
 # Complex Mermaid Diagrams Test
 
 ## flowchart LR Test
@@ -269,7 +269,7 @@ This is regular text between mermaid diagrams.
 ### Stdin input
 
 ```
-$ echo '# Hello\n\n```mermaid\nflowchart LR\n    A --> B\n```' | termaid
+$ echo '# Hello\n\n```mermaid\nflowchart LR\n    A --> B\n```' | asciimaid
 # Hello
 
     ┌───┐     ┌───┐
@@ -282,20 +282,20 @@ $ echo '# Hello\n\n```mermaid\nflowchart LR\n    A --> B\n```' | termaid
 ## Uninstall
 
 ```bash
-npm remove -g termaid-cli
+npm remove -g asciimaid-cli
 ```
 
 ## Debug
 
 ```bash
 # tag
-npm install -g git+https://github.com/ktrysmt/termaid.git#v1.0.0
-npm install -g git+https://github.com/ktrysmt/termaid.git#v1.0.1
+npm install -g git+https://github.com/ktrysmt/asciimaid.git#v1.0.0
+npm install -g git+https://github.com/ktrysmt/asciimaid.git#v1.0.1
 # branch
-npm install -g git+https://github.com/ktrysmt/termaid.git#master
-npm install -g git+https://github.com/ktrysmt/termaid.git#feature
+npm install -g git+https://github.com/ktrysmt/asciimaid.git#master
+npm install -g git+https://github.com/ktrysmt/asciimaid.git#feature
 # hash
-npm install -g git+https://github.com/ktrysmt/termaid.git#a52a596
+npm install -g git+https://github.com/ktrysmt/asciimaid.git#a52a596
 ```
 
 ## Author
