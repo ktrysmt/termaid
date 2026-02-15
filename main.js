@@ -148,6 +148,16 @@ async function main() {
         width: options.width,
       }, highlightOptions));
 
+      // Override link renderer to avoid OSC 8 escape sequences (fixes tmux display issues)
+      marked.use({
+        renderer: {
+          link(token) {
+            // URLとテキストを両方表示する場合
+            return token.text + (token.text !== token.href ? ` (${token.href})` : '');
+          }
+        }
+      });
+
       // If highlighting is disabled, override the code renderer to bypass cli-highlight
       if (!shouldHighlight) {
         marked.use({

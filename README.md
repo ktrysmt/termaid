@@ -289,8 +289,7 @@ npm remove -g asciimaid-cli
 
 ```bash
 # tag
-npm install -g git+https://github.com/ktrysmt/asciimaid.git#v1.0.0
-npm install -g git+https://github.com/ktrysmt/asciimaid.git#v1.0.1
+npm install -g git+https://github.com/ktrysmt/asciimaid.git#v1.0.4
 # branch
 npm install -g git+https://github.com/ktrysmt/asciimaid.git#master
 npm install -g git+https://github.com/ktrysmt/asciimaid.git#feature
