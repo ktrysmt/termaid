@@ -276,7 +276,6 @@ async function main() {
     .option('--no-pager', 'disable pager (less)')
     .option('--no-mouse', 'disable mouse scroll in pager')
     .option('--no-color', 'disable colored output')
-    .option('--no-highlight', 'disable syntax highlighting')
     .option('--width <number>', 'terminal width override', Number)
     .option('--ascii', 'use pure ASCII mode for diagrams (default: unicode)')
     .option('--theme <name>', `syntax highlight theme (${THEME_NAMES.join(', ')})`, 'default')
@@ -292,7 +291,7 @@ async function main() {
       const useColor = options.color !== false && !process.env.NO_COLOR;
 
       // Configure syntax highlighting options (passed to cli-highlight)
-      const shouldHighlight = options.highlight !== false && useColor;
+      const shouldHighlight = useColor;
 
       // Configure marked with terminal renderer
       const selectedTheme = THEMES[themeName];
