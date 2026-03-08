@@ -24,7 +24,6 @@ Options:
   --no-pager        disable pager (less)
   --no-mouse        disable mouse scroll in pager
   --no-color        disable colored output
-  --no-highlight    disable syntax highlighting
   --width <number>  terminal width override
   --ascii           use pure ASCII mode for diagrams (default: unicode)
   --theme <name>    syntax highlight theme (default, monokai, dracula,
