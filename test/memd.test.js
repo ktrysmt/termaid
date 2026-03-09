@@ -22,7 +22,7 @@ async function run(args, { waitFor = null } = {}) {
 describe('memd CLI', () => {
   it('--version', async () => {
     const output = await run(['-v'])
-    expect(output).toContain('1.3.0')
+    expect(output).toContain('1.5.0')
   })
 
   it('--help', async () => {
@@ -98,6 +98,38 @@ describe('memd CLI', () => {
     })).trim()
     expect(output).toContain('Error reading file')
     expect(output).toContain('nonexistent.md')
+  })
+
+  it('renders test-br.md (<br> tag line breaks)', async () => {
+    const output = await run(
+      ['--no-pager', '--no-color', '--width', '80', 'test/test-br.md'],
+      { waitFor: t => t.includes('All three variants') },
+    )
+    // Each node should have its label split across two lines
+    expect(output).toContain('Line1')
+    expect(output).toContain('Line2')
+    expect(output).toContain('Hello')
+    expect(output).toContain('World')
+    expect(output).toContain('Foo')
+    expect(output).toContain('Bar')
+    // <br> tags should NOT appear in the diagram portion (extract diagram area)
+    const diagramStart = output.indexOf('Line1')
+    const diagramEnd = output.indexOf('Bar') + 3
+    const diagramSection = output.slice(diagramStart, diagramEnd)
+    expect(diagramSection).not.toMatch(/<br\s*\/?>/)
+  })
+
+  it('renders test-cjk.md (Japanese labels)', async () => {
+    const output = await run(
+      ['--no-pager', '--no-color', '--width', '80', 'test/test-cjk.md'],
+      { waitFor: t => t.includes('Japanese labels') },
+    )
+    expect(output).toContain('開始')
+    expect(output).toContain('判定')
+    expect(output).toContain('実行')
+    expect(output).toContain('終了')
+    expect(output).toContain('はい')
+    expect(output).toContain('いいえ')
   })
 
   it('reads markdown from stdin via shell', async () => {

@@ -2,7 +2,7 @@
 // @ts-nocheck
 import { marked } from 'marked';
 import { markedTerminal } from 'marked-terminal';
-import { renderMermaidAscii } from 'beautiful-mermaid';
+import { renderMermaidASCII } from 'beautiful-mermaid';
 import { highlight, supportsLanguage, plain } from 'cli-highlight';
 import chalk from 'chalk';
 import { program } from 'commander';
@@ -179,15 +179,13 @@ function convertMermaidToAscii(markdown, options = {}) {
 
   return markdown.replace(mermaidRegex, function (_, code) {
     try {
-      // Pass width option to beautiful-mermaid if provided
       const mermaidOptions = {};
-      if (options.width) {
-        mermaidOptions.maxWidth = options.width;
-      }
       if (options.ascii) {
         mermaidOptions.useAscii = true;
       }
-      const asciiArt = renderMermaidAscii(code.trim(), mermaidOptions);
+      // Set color mode based on --no-color flag
+      mermaidOptions.colorMode = options.color === false ? 'none' : 'none';
+      const asciiArt = renderMermaidASCII(code.trim(), mermaidOptions);
       return '```text\n' + asciiArt + '\n```';
     } catch (error) {
       // Warn user about conversion failure (helps with debugging)
