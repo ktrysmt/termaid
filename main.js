@@ -347,6 +347,11 @@ function spawnPager(text, options) {
     }
   });
 
+  // Ignore EPIPE on stdin - expected when user quits pager before all content is consumed
+  pager.stdin.on('error', (err) => {
+    if (err.code !== 'EPIPE') throw err;
+  });
+
   pager.stdin.write(text);
   pager.stdin.end();
 
