@@ -11,8 +11,8 @@ npm install -g memd-cli
 ## Usage
 
 
-```
-Usage: memd [options] [files...]
+```sh
+Usage: memd [options] [command] [files...]
 
 Render markdown with mermaid diagrams
 
@@ -27,12 +27,13 @@ Options:
   --width <number>  terminal width override
   --ascii           use pure ASCII mode for diagrams (default: unicode)
   --html            output as standalone HTML (mermaid diagrams rendered as inline SVG)
-  --theme <name>    color theme (default: "nord", env: MEMD_THEME)
-                    zinc-light, zinc-dark, tokyo-night, tokyo-night-storm,
-                    tokyo-night-light, catppuccin-mocha, catppuccin-latte,
-                    nord, nord-light, dracula, github-light, github-dark,
-                    solarized-light, solarized-dark, one-dark
+  --theme <name>    color theme (env: MEMD_THEME)
+                    nord, dracula, one-dark, github-dark, github-light, solarized-dark, solarized-light, catppuccin-mocha, catppuccin-latte, tokyo-night, tokyo-night-storm, tokyo-night-light, nord-light,
+                    zinc-dark, zinc-light (default: "catppuccin-mocha")
   -h, --help        display help for command
+
+Commands:
+  serve [options]   Start HTTP server to serve .md files as HTML
 ```
 
 
@@ -293,45 +294,6 @@ This is regular text between mermaid diagrams.
 
 ```
 
-### Serve
-
-Start a local HTTP server that renders `.md` files as HTML on the fly.
-
-```
-$ memd serve
-memd serve
-  Directory: /home/ubuntu/docs
-  Theme:     nord
-  URL:       http://localhost:8888/
-
-$ memd serve --dir ./docs --port 3000 --theme dracula
-$ memd serve --workers 2
-$ memd serve --watch
-```
-
-```
-Usage: memd serve [options]
-
-Start HTTP server to serve .md files as HTML
-
-Options:
-  -d, --dir <path>     directory to serve (default: ".")
-  -p, --port <number>  port number (0-65535) (default: 8888)
-  --host <string>      host to bind (default: "127.0.0.1")
-  --workers <number>   number of render workers (default: min(cpus-1, 4))
-  --watch              watch for file changes and live-reload
-  --theme <name>       color theme (env: MEMD_THEME) (default: "nord")
-  -h, --help           display help for command
-```
-
-> **Note:** `--host 0.0.0.0` を指定するとネットワーク上の全インターフェースにバインドされます。認証機構はないため、ディレクトリ内の `.md` ファイルがネットワーク上から閲覧可能になります。信頼されたネットワーク内でのみ使用してください。
->
-> serve コマンドはパス検証とファイル読み取りの間にわずかなタイミング差 (TOCTOU) があります。信頼されたファイルシステム上で使用してください。
->
-> serve は `.md` ファイル、画像 (png, jpg, gif, svg, webp, ico, avif)、CSS を配信します。JavaScript やその他のファイルは配信されません。
->
-> 各ワーカーは独立した V8 isolate で Mermaid レンダリングライブラリをロードします。ワーカー1つあたり約 80-120 MB のメモリを消費します。デフォルトは `min(CPU数-1, 4)` ワーカーです。メモリが限られた環境では `--workers 1` を指定してください。推奨メモリ: 512 MB + (ワーカー数 x 120 MB)。
-
 ### HTML output
 
 HTML is written to stdout. Use shell redirection to save to a file.
@@ -355,29 +317,51 @@ $ echo '# Hello\n\n```mermaid\nflowchart LR\n    A --> B\n```' | memd
     └───┘     └───┘
 ```
 
-## Uninstall
+### Serve
 
-```bash
-npm remove -g memd-cli
+Start a local HTTP server that renders `.md` files as HTML on the fly.
+
+```sh
+$ memd serve --help
+Usage: memd serve [options]
+
+Start HTTP server to serve .md files as HTML
+
+Options:
+  -d, --dir <path>     directory to serve (default: ".")
+  -p, --port <number>  port number (0-65535) (default: 8888)
+  --host <string>      host to bind (default: "127.0.0.1")
+  --workers <number>   number of render workers (default: min(cpus-1, 4))
+  --watch              watch for file changes and live-reload
+  --theme <name>       color theme (env: MEMD_THEME)
+                       nord, dracula, one-dark, github-dark, github-light, solarized-dark,
+                       solarized-light, catppuccin-mocha, catppuccin-latte, tokyo-night,
+                       tokyo-night-storm, tokyo-night-light, nord-light, zinc-dark, zinc-light (default:
+                       "catppuccin-mocha")
+  -h, --help           display help for command
 ```
 
-## Development
+Example:
 
-```bash
-node main.js test/test1.md
+```
+$ memd serve
+memd serve
+  Directory: /home/ubuntu/docs
+  Theme:     nord
+  URL:       http://localhost:8888/
+
+$ memd serve --dir ./docs --port 3000 --theme dracula
+$ memd serve --workers 2
+$ memd serve --watch
 ```
 
-## Use specific version
+Note:
 
-```bash
-# tag
-npm install -g git+https://github.com/ktrysmt/memd.git#v2.0.0
-# branch
-npm install -g git+https://github.com/ktrysmt/memd.git#master
-npm install -g git+https://github.com/ktrysmt/memd.git#feature
-# hash
-npm install -g git+https://github.com/ktrysmt/memd.git#a52a596
-```
+* Specifying `--host 0.0.0.0` binds the server to all network interfaces. Since there is no authentication mechanism, `.md` files in the directory will be accessible over the network. Use only within trusted networks.
+* The serve command has a small timing gap (TOCTOU) between path validation and file reading. Use on trusted filesystems only.
+* Serve serves `.md` files, images (png, jpg, gif, svg, webp, ico, avif), and CSS. JavaScript and other file types are not served.
+* Each worker loads the Mermaid rendering library in an independent V8 isolate. Each worker consumes approximately 80-120 MB of memory. The default is `min(num_CPUs-1, 4)` workers. In memory-constrained environments, specify `--workers 1`. Recommended memory: 512 MB + (number of workers x 120 MB).
+
 
 ## Author
 
