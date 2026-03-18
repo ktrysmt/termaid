@@ -2,7 +2,7 @@
 // @ts-nocheck
 import { marked } from 'marked';
 import { markedTerminal } from 'marked-terminal';
-import { renderMermaidASCII, THEMES as MERMAID_THEMES } from 'beautiful-mermaid';
+import { renderMermaidASCII, THEMES as MERMAID_THEMES } from '@ktrysmt/beautiful-mermaid';
 import chalk from 'chalk';
 import { program } from 'commander';
 import { spawn } from 'child_process';

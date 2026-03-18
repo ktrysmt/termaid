@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import { Marked } from 'marked';
-import { renderMermaidSVG } from 'beautiful-mermaid';
+import { renderMermaidSVG } from '@ktrysmt/beautiful-mermaid';
 import { escapeHtml, resolveThemeColors } from './render-utils.js';
 
 export const MERMAID_MODAL_SCRIPT = [

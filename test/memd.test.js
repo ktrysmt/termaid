@@ -26,7 +26,7 @@ function runSync(args) {
 describe('memd CLI', () => {
   it.concurrent('--version', async () => {
     const output = await run(['-v'])
-    expect(output).toContain('3.0.2')
+    expect(output).toContain('3.1.0')
   })
 
   it.concurrent('--help', async () => {
@@ -120,6 +120,29 @@ describe('memd CLI', () => {
     expect(output).toContain('終了')
     expect(output).toContain('はい')
     expect(output).toContain('いいえ')
+  })
+
+  it.concurrent('renders complex.md (graph TD with <br> and special chars)', async () => {
+    const output = await run(
+      ['--no-pager', '--no-color', '--width', '80', 'test/complex.md'],
+    )
+    // Node labels with <br> should render as multi-line text
+    expect(output).toContain('AAA')
+    expect(output).toContain('keita')
+    expect(output).toContain('BBB')
+    expect(output).toContain('yuriko')
+    // Leaf nodes
+    expect(output).toContain('1 / 2')
+    expect(output).toContain('XXX')
+    expect(output).toContain('YYY ZZZ')
+    // Decision node and edge labels
+    expect(output).toContain('F?')
+    expect(output).toContain('Yes')
+    expect(output).toContain('No')
+    expect(output).toContain('High level')
+    expect(output).toContain('Dumb Tr')
+    // <br> tags should not appear in rendered output
+    expect(output).not.toMatch(/<br\s*\/?>/)
   })
 
   it('reads markdown from stdin via shell', () => {
