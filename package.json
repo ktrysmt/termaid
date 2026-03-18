@@ -1,13 +1,13 @@
 {
   "name": "memd-cli",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "type": "module",
   "main": "main.js",
   "bin": {
     "memd": "main.js"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run --maxConcurrency=20"
   },
   "dependencies": {
     "beautiful-mermaid": "^1.1.3",

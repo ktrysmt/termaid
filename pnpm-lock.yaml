@@ -26,10 +26,10 @@ importers:
       shiki:
         specifier: ^4.0.2
         version: 4.0.2
-    devDependencies:
       tuistory:
         specifier: ^0.0.16
         version: 0.0.16
+    devDependencies:
       vitest:
         specifier: ^4.0.18
         version: 4.0.18
@@ -646,16 +646,16 @@ packages:
   get-them-args@1.3.2:
     resolution: {integrity: sha512-LRn8Jlk+DwZE4GTlDbT3Hikd1wSHgLMme/+7ddlqKd7ldwR6LjJgTVWzBnR01wnYGe4KgrXjg287RaI22UHmAw==}
 
-  ghostty-opentui@1.4.6:
-    resolution: {integrity: sha512-qNxhhqIaX9Agh9nVRIiAYyEDIElEIV77wu4dzBM/dd5bdAsUQrzc555t9KCbkP3KhIH9hndj9d/919i+Cfo+fA==}
+  ghostty-opentui@1.4.7:
+    resolution: {integrity: sha512-nn77E7UtJJ4lCnSjiZUKsAp4z0VKH/rTwiqFgfim0L3teepzfQIxTwqFzTf7bui86B2RIv5WUOw36QRyHQESQQ==}
     peerDependencies:
       '@opentui/core': '*'
     peerDependenciesMeta:
       '@opentui/core':
         optional: true
 
-  goke@6.2.3:
-    resolution: {integrity: sha512-uDlz9KseqhigkYvY4URrMx0UOOFCVCaQUA1Fp6ncCYiv/67RSTRuislT6YIJiBxZKcKeshaD+senC8BUTVlFNQ==}
+  goke@6.3.0:
+    resolution: {integrity: sha512-U9vmFbQdHpfUAO9nzLn7Kaxbz7u5X5d5bgme0P7dCw8Eb7MozpFvsaUgcoD2JNx0anaQUZRs0Hb1omZUOCAM7A==}
     engines: {node: '>=18'}
 
   has-flag@4.0.0:
@@ -671,8 +671,8 @@ packages:
   highlight.js@10.7.3:
     resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
 
-  hono@4.12.5:
-    resolution: {integrity: sha512-3qq+FUBtlTHhtYxbxheZgY8NIFnkkC/MR8u5TTsr7YZ3wixryQ3cCwn3iZbg8p8B88iDBBAYSfZDS75t8MN7Vg==}
+  hono@4.12.7:
+    resolution: {integrity: sha512-jq9l1DM0zVIvsm3lv9Nw9nlJnMNPOcAtsbsgiUhWcFzPE99Gvo6yRTlszSLLYacMeQ6quHD6hMfId8crVHvexw==}
     engines: {node: '>=16.9.0'}
 
   html-void-elements@3.0.0:
@@ -1134,9 +1134,9 @@ snapshots:
   '@esbuild/win32-x64@0.27.3':
     optional: true
 
-  '@hono/node-server@1.19.11(hono@4.12.5)':
+  '@hono/node-server@1.19.11(hono@4.12.7)':
     dependencies:
-      hono: 4.12.5
+      hono: 4.12.7
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
@@ -1513,14 +1513,14 @@ snapshots:
 
   get-them-args@1.3.2: {}
 
-  ghostty-opentui@1.4.6:
+  ghostty-opentui@1.4.7:
     dependencies:
       strip-ansi: 7.2.0
     optionalDependencies:
       '@takumi-rs/core': 0.65.0
       '@takumi-rs/helpers': 0.65.0
 
-  goke@6.2.3:
+  goke@6.3.0:
     dependencies:
       picocolors: 1.1.1
 
@@ -1546,7 +1546,7 @@ snapshots:
 
   highlight.js@10.7.3: {}
 
-  hono@4.12.5: {}
+  hono@4.12.7: {}
 
   html-void-elements@3.0.0: {}
 
@@ -1814,11 +1814,11 @@ snapshots:
 
   tuistory@0.0.16:
     dependencies:
-      '@hono/node-server': 1.19.11(hono@4.12.5)
+      '@hono/node-server': 1.19.11(hono@4.12.7)
       errore: 0.11.0
-      ghostty-opentui: 1.4.6
-      goke: 6.2.3
-      hono: 4.12.5
+      ghostty-opentui: 1.4.7
+      goke: 6.3.0
+      hono: 4.12.7
       kill-port-process: 3.2.1
       picocolors: 1.1.1
       string-dedent: 3.0.2

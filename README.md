@@ -363,6 +363,31 @@ Note:
 * Each worker loads the Mermaid rendering library in an independent V8 isolate. Each worker consumes approximately 80-120 MB of memory. The default is `min(num_CPUs-1, 4)` workers. In memory-constrained environments, specify `--workers 1`. Recommended memory: 512 MB + (number of workers x 120 MB).
 
 
+## Environment Variables
+
+| Variable | Description | Default |
+|---|---|---|
+| `MEMD_THEME` | Color theme for both terminal and HTML output | `nord` |
+| `NO_COLOR` | Disable colored terminal output (any value) | _(unset)_ |
+| `NO_PAGER` | Disable pager (any value) | _(unset)_ |
+| `PAGER` | Pager command | `less` |
+| `MEMD_SERVE_RESPAWN_MAX` | Max worker respawns before marking dead | `5` |
+| `MEMD_SERVE_RESPAWN_WINDOW_MS` | Time window for respawn limit (ms) | `60000` |
+| `MEMD_SERVE_RENDER_TIMEOUT_MS` | Per-request render timeout (ms) | `30000` |
+| `MEMD_SERVE_DEAD_RECOVERY_MS` | Cooldown before recovering a dead worker (ms) | `300000` |
+| `MEMD_SERVE_CACHE_MAX_ENTRIES` | Max number of cached rendered pages | `200` |
+| `MEMD_SERVE_CACHE_MAX_BYTES` | Max total bytes for render cache | `52428800` (50 MB) |
+| `MEMD_SERVE_MD_MAX_SIZE` | Max markdown file size to render (bytes) | `10485760` (10 MB) |
+| `MEMD_SERVE_GZIP_CACHE_MAX` | Max number of cached gzip responses | `200` |
+
+```bash
+# Examples
+MEMD_THEME=github-dark memd README.md
+MEMD_THEME=dracula memd serve
+NO_COLOR=1 memd README.md
+MEMD_SERVE_RENDER_TIMEOUT_MS=60000 memd serve
+```
+
 ## Author
 
 [ktrysmt](https://github.com/ktrysmt)

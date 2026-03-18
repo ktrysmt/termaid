@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { launchTerminal } from 'tuistory'
-import { execSync, spawn } from 'child_process'
+import { execSync, execFile, execFileSync, spawn } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -11,30 +11,25 @@ const MAIN = path.join(__dirname, '..', 'main.js')
 // Strip MEMD_THEME from env so tests always get the built-in default (nord)
 delete process.env.MEMD_THEME
 
-async function run(args, { waitFor = null } = {}) {
-  const session = await launchTerminal({
-    command: 'node',
-    args: [MAIN, ...args],
-    cols: 80,
-    rows: 30,
-    waitForData: false,
+function run(args) {
+  return new Promise((resolve) => {
+    execFile('node', [MAIN, ...args], { encoding: 'utf-8', timeout: 15000 }, (err, stdout, stderr) => {
+      resolve(((stdout ?? '') + (stderr ?? '')).trim())
+    })
   })
-  const waitText = waitFor ?? (t => t.trim().length > 0)
-  const output = await session.text({ waitFor: waitText, timeout: 8000 })
-  return output.trim()
 }
 
 function runSync(args) {
-  return execSync(`node ${MAIN} ${args}`, { encoding: 'utf-8', timeout: 15000 })
+  return execFileSync('node', [MAIN, ...args], { encoding: 'utf-8', timeout: 15000 })
 }
 
 describe('memd CLI', () => {
-  it('--version', async () => {
+  it.concurrent('--version', async () => {
     const output = await run(['-v'])
-    expect(output).toContain('3.0.1')
+    expect(output).toContain('3.0.2')
   })
 
-  it('--help', async () => {
+  it.concurrent('--help', async () => {
     const output = await run(['--help'])
     expect(output).toContain('Usage: memd')
     expect(output).toContain('--no-pager')
@@ -47,7 +42,6 @@ describe('memd CLI', () => {
   it('renders test1.md (basic markdown + mermaid)', async () => {
     const output = await run(
       ['--no-pager', '--no-color', '--width', '80', 'test/test1.md'],
-      { waitFor: t => t.includes('More text.') },
     )
     expect(output).toMatchInlineSnapshot(`
       "# Hello
@@ -63,10 +57,9 @@ describe('memd CLI', () => {
     `)
   })
 
-  it('renders test2.md (complex mermaid diagram)', async () => {
+  it.concurrent('renders test2.md (complex mermaid diagram)', async () => {
     const output = await run(
       ['--no-pager', '--no-color', '--width', '80', 'test/test2.md'],
-      { waitFor: t => t.includes('More text after the diagram.') },
     )
     expect(output).toContain('Start')
     expect(output).toContain('Decision?')
@@ -75,10 +68,9 @@ describe('memd CLI', () => {
     expect(output).toContain('More text after the diagram.')
   })
 
-  it('--ascii renders ASCII-only diagram', async () => {
+  it.concurrent('--ascii renders ASCII-only diagram', async () => {
     const output = await run(
       ['--no-pager', '--no-color', '--width', '80', '--ascii', 'test/test1.md'],
-      { waitFor: t => t.includes('More text.') },
     )
     expect(output).toContain('+---+')
     expect(output).toContain('---->')
@@ -86,35 +78,23 @@ describe('memd CLI', () => {
     expect(output).not.toContain('►')
   })
 
-  it('--no-color strips ANSI escape codes', async () => {
+  it.concurrent('--no-color strips ANSI escape codes', async () => {
     const output = await run(
       ['--no-pager', '--no-color', '--width', '80', 'test/test1.md'],
-      { waitFor: t => t.includes('More text.') },
     )
     // eslint-disable-next-line no-control-regex
     expect(output).not.toMatch(/\x1b\[[\d;]*m/)
   })
 
-  it('error on missing file', async () => {
-    const session = await launchTerminal({
-      command: 'node',
-      args: [MAIN, '--no-pager', 'test/nonexistent.md'],
-      cols: 80,
-      rows: 10,
-      waitForData: false,
-    })
-    const output = (await session.text({
-      waitFor: t => t.includes('Error'),
-      timeout: 8000,
-    })).trim()
+  it.concurrent('error on missing file', async () => {
+    const output = await run(['--no-pager', 'test/nonexistent.md'])
     expect(output).toContain('Error reading file')
     expect(output).toContain('nonexistent.md')
   })
 
-  it('renders test-br.md (<br> tag line breaks)', async () => {
+  it.concurrent('renders test-br.md (<br> tag line breaks)', async () => {
     const output = await run(
       ['--no-pager', '--no-color', '--width', '80', 'test/test-br.md'],
-      { waitFor: t => t.includes('All three variants') },
     )
     // Each node should have its label split across two lines
     expect(output).toContain('Line1')
@@ -130,10 +110,9 @@ describe('memd CLI', () => {
     expect(diagramSection).not.toMatch(/<br\s*\/?>/)
   })
 
-  it('renders test-cjk.md (Japanese labels)', async () => {
+  it.concurrent('renders test-cjk.md (Japanese labels)', async () => {
     const output = await run(
       ['--no-pager', '--no-color', '--width', '80', 'test/test-cjk.md'],
-      { waitFor: t => t.includes('Japanese labels') },
     )
     expect(output).toContain('開始')
     expect(output).toContain('判定')
@@ -143,25 +122,18 @@ describe('memd CLI', () => {
     expect(output).toContain('いいえ')
   })
 
-  it('reads markdown from stdin via shell', async () => {
-    const session = await launchTerminal({
-      command: 'sh',
-      args: ['-c', `echo '# stdin test' | node ${MAIN} --no-pager --no-color`],
-      cols: 80,
-      rows: 10,
-      waitForData: false,
-    })
-    const output = (await session.text({
-      waitFor: t => t.includes('stdin test'),
-      timeout: 8000,
-    })).trim()
+  it('reads markdown from stdin via shell', () => {
+    const output = execSync(
+      `echo '# stdin test' | node ${MAIN} --no-pager --no-color`,
+      { encoding: 'utf-8', timeout: 15000 },
+    ).trim()
     expect(output).toContain('stdin test')
   })
 
   // --html output tests
   describe('--html output', () => {
     it('--html + file -> stdout', () => {
-      const output = runSync('--html test/test1.md')
+      const output = runSync(['--html', 'test/test1.md'])
       expect(output).toContain('<!DOCTYPE html>')
       expect(output).toContain('<svg')
       // Contains theme CSS colors (nord default: bg=#2e3440, fg=#d8dee9)
@@ -184,7 +156,7 @@ describe('memd CLI', () => {
     })
 
     it('--html + multiple Mermaid blocks have unique marker IDs', () => {
-      const output = runSync('--html test/test3.md')
+      const output = runSync(['--html', 'test/test3.md'])
       expect(output).toContain('<svg')
       // Check for prefixed marker IDs (m0-, m1-, etc.)
       expect(output).toMatch(/id="m0-/)
@@ -192,7 +164,7 @@ describe('memd CLI', () => {
     })
 
     it('--html + multiple files -> combined single HTML', () => {
-      const output = runSync('--html test/test1.md test/test2.md')
+      const output = runSync(['--html', 'test/test1.md', 'test/test2.md'])
       expect(output).toContain('<!DOCTYPE html>')
       // Content from both files
       expect(output).toContain('Hello')
@@ -206,13 +178,13 @@ describe('memd CLI', () => {
   // Theme tests (HTML path)
   describe('theme (HTML path)', () => {
     it('--html --theme dracula uses dracula colors', () => {
-      const output = runSync('--html --theme dracula test/test1.md')
+      const output = runSync(['--html', '--theme', 'dracula', 'test/test1.md'])
       expect(output).toContain('#282a36') // bg
       expect(output).toContain('#f8f8f2') // fg
     })
 
     it('--html --theme tokyo-night uses tokyo-night colors', () => {
-      const output = runSync('--html --theme tokyo-night test/test1.md')
+      const output = runSync(['--html', '--theme', 'tokyo-night', 'test/test1.md'])
       expect(output).toContain('#1a1b26') // bg
       expect(output).toContain('#a9b1d6') // fg
     })
@@ -224,7 +196,7 @@ describe('memd CLI', () => {
     })
 
     it('--html --no-color outputs full color HTML (silently ignored)', () => {
-      const output = runSync('--html --no-color test/test1.md')
+      const output = runSync(['--html', '--no-color', 'test/test1.md'])
       expect(output).toContain('<!DOCTYPE html>')
       expect(output).toContain('#2e3440')
     })
@@ -232,53 +204,39 @@ describe('memd CLI', () => {
 
   // Theme tests (terminal path)
   describe('theme (terminal path)', () => {
-    it('--theme dracula renders terminal output', async () => {
+    it.concurrent('--theme dracula renders terminal output', async () => {
       const output = await run(
         ['--no-pager', '--no-color', '--theme', 'dracula', 'test/test1.md'],
-        { waitFor: t => t.includes('More text.') },
       )
       expect(output).toContain('Hello')
       expect(output).toContain('More text.')
     })
 
-    it('--theme tokyo-night (no highlight) renders terminal output', async () => {
+    it.concurrent('--theme tokyo-night (no highlight) renders terminal output', async () => {
       const output = await run(
         ['--no-pager', '--no-color', '--theme', 'tokyo-night', 'test/test1.md'],
-        { waitFor: t => t.includes('More text.') },
       )
       expect(output).toContain('Hello')
       expect(output).toContain('More text.')
     })
 
-    it('--theme one-dark renders terminal output', async () => {
+    it.concurrent('--theme one-dark renders terminal output', async () => {
       const output = await run(
         ['--no-pager', '--no-color', '--theme', 'one-dark', 'test/test1.md'],
-        { waitFor: t => t.includes('More text.') },
       )
       expect(output).toContain('Hello')
       expect(output).toContain('More text.')
     })
 
-    it('--theme nonexistent exits with error', async () => {
-      const session = await launchTerminal({
-        command: 'node',
-        args: [MAIN, '--no-pager', '--no-color', '--theme', 'nonexistent', 'test/test1.md'],
-        cols: 80,
-        rows: 10,
-        waitForData: false,
-      })
-      const output = (await session.text({
-        waitFor: t => t.includes('Unknown theme'),
-        timeout: 8000,
-      })).trim()
+    it.concurrent('--theme nonexistent exits with error', async () => {
+      const output = await run(['--no-pager', '--no-color', '--theme', 'nonexistent', 'test/test1.md'])
       expect(output).toContain('Unknown theme')
       expect(output).toContain('Available themes')
     })
 
-    it('default theme is nord', async () => {
+    it.concurrent('default theme is nord', async () => {
       const output = await run(
         ['--no-pager', '--no-color', 'test/test1.md'],
-        { waitFor: t => t.includes('More text.') },
       )
       expect(output).toContain('Hello')
       expect(output).toContain('More text.')
@@ -317,7 +275,7 @@ describe('memd CLI', () => {
   })
 
   // chalk.level = 0 + Shiki: verify no ANSI codes for all themes
-  describe('--no-color strips ANSI from all themes', () => {
+  describe.concurrent('--no-color strips ANSI from all themes', () => {
     const themes = [
       'nord', 'dracula', 'one-dark', 'github-dark', 'github-light',
       'solarized-dark', 'solarized-light', 'catppuccin-mocha', 'catppuccin-latte',
@@ -329,7 +287,6 @@ describe('memd CLI', () => {
       it(`--theme ${theme} --no-color has no ANSI codes`, async () => {
         const output = await run(
           ['--no-pager', '--no-color', '--theme', theme, 'test/test-highlight.md'],
-          { waitFor: t => t.includes('TypeScript') },
         )
         // eslint-disable-next-line no-control-regex
         expect(output).not.toMatch(/\x1b\[[\d;]*m/)
@@ -347,37 +304,72 @@ describe('memd CLI', () => {
     expect(output).toMatch(/\x1b\[38;2;\d+;\d+;\d+m/)
   })
 
-  it('unknown language falls back to plain text without errors', async () => {
-    const session = await launchTerminal({
-      command: 'sh',
-      args: ['-c', `echo '# Test\n\n\`\`\`unknownlang\nsome code\n\`\`\`' | node ${MAIN} --no-pager --no-color`],
-      cols: 80,
-      rows: 10,
-      waitForData: false,
-    })
-    const output = (await session.text({
-      waitFor: t => t.includes('some code'),
-      timeout: 8000,
-    })).trim()
+  it('unknown language falls back to plain text without errors', () => {
+    const output = execSync(`node ${MAIN} --no-pager --no-color`, {
+      encoding: 'utf-8',
+      timeout: 15000,
+      input: '# Test\n\n```unknownlang\nsome code\n```',
+    }).trim()
     expect(output).toContain('some code')
     expect(output).not.toContain('Error')
     expect(output).not.toContain('Could not find the language')
   })
 
-  it('cli-highlight is not invoked (no highlight.js errors in output)', async () => {
+  it('cli-highlight is not invoked (no highlight.js errors in output)', () => {
+    const output = execSync(`node ${MAIN} --no-pager --no-color`, {
+      encoding: 'utf-8',
+      timeout: 15000,
+      input: '# Test\n\n```rust\nfn main() {}\n```',
+    }).trim()
+    expect(output).toContain('fn main')
+    expect(output).not.toContain('Could not find the language')
+  })
+})
+
+describe('TTY behavior (PTY required)', () => {
+  it('auto-detects color in TTY (no --no-color)', async () => {
     const session = await launchTerminal({
-      command: 'sh',
-      args: ['-c', `echo '# Test\n\n\`\`\`rust\nfn main() {}\n\`\`\`' | node ${MAIN} --no-pager`],
+      command: 'node',
+      args: [MAIN, '--no-pager', '--width', '80', 'test/test-highlight.md'],
+      cols: 80,
+      rows: 30,
+      waitForData: false,
+    })
+    await session.text({ waitFor: t => t.includes('TypeScript'), timeout: 8000 })
+    const data = await session.getTerminalData()
+    const hasColor = data.lines.some(line =>
+      line.spans.some(span => span.fg !== null)
+    )
+    expect(hasColor).toBe(true)
+  })
+
+  it('pager activates for long output in TTY (no --no-pager)', async () => {
+    // test3.md is long enough to exceed terminal rows
+    const session = await launchTerminal({
+      command: 'node',
+      args: [MAIN, '--no-color', '--width', '80', 'test/test3.md'],
       cols: 80,
       rows: 10,
       waitForData: false,
     })
-    const output = (await session.text({
-      waitFor: t => t.includes('fn main'),
-      timeout: 8000,
-    })).trim()
-    expect(output).toContain('fn main')
-    expect(output).not.toContain('Could not find the language')
+    const output = await session.text({ timeout: 8000 })
+    // less shows ':' or '(END)' prompt; partial output means pager is holding
+    expect(output).not.toContain('Error Handling Example')
+    await session.write('q')
+  })
+
+  it('pager quit with q exits cleanly', async () => {
+    const session = await launchTerminal({
+      command: 'node',
+      args: [MAIN, '--no-color', '--width', '80', 'test/test3.md'],
+      cols: 80,
+      rows: 10,
+      waitForData: false,
+    })
+    await session.text({ timeout: 8000 })
+    await session.write('q')
+    // After quitting, session should end without error
+    await session.waitIdle({ timeout: 3000 })
   })
 })
 
@@ -414,7 +406,7 @@ describe('memd serve', () => {
   })
 
   it('serve --help shows options', () => {
-    const output = runSync('serve --help')
+    const output = runSync(['serve', '--help'])
     expect(output).toContain('-d, --dir')
     expect(output).toContain('--port')
     expect(output).toContain('--host')

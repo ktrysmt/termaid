@@ -566,6 +566,7 @@ async function main() {
     .name('memd')
     .version(packageJson.version, '-v, --version', 'output the version number')
     .description('Render markdown with mermaid diagrams')
+    .enablePositionalOptions()
     .argument('[files...]', 'markdown file(s) to render')
     .option('--no-pager', 'disable pager (less)')
     .option('--no-mouse', 'disable mouse scroll in pager')
