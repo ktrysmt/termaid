@@ -26,7 +26,7 @@ function runSync(args) {
 describe('memd CLI', () => {
   it.concurrent('--version', async () => {
     const output = await run(['-v'])
-    expect(output).toContain('3.1.1')
+    expect(output).toContain('3.1.2')
   })
 
   it.concurrent('--help', async () => {
