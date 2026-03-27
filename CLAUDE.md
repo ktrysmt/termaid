@@ -41,7 +41,8 @@ node main.js test/test1.md
 node main.js test/test2.md
 node main.js test/complex.md
 node main.js --html test/test1.md          # HTML output to stdout
-node main.js serve --dir test --port 3000  # HTTP serve mode
+node main.js serve test --port 3000        # HTTP serve mode (directory)
+node main.js serve test/test1.md           # HTTP serve mode (single file)
 ```
 
 ## Key CLI flags
@@ -70,4 +71,5 @@ nord-light, zinc-dark, zinc-light
 - `render-shared.js` converts Mermaid fenced blocks to SVG via `@ktrysmt/beautiful-mermaid`, then renders full HTML with `marked`
 - `render-worker.js` runs `renderToHTML` in a worker thread for non-blocking serve mode
 - `render-utils.js` provides theme color resolution and HTML escaping (shared by main.js and render-shared.js)
-- Serve mode supports: directory listing, ETag/304 caching, gzip, static file serving (images/css), sidebar navigation, `--watch` with SSE live reload, CSP nonce
+- Serve mode supports: directory or single-file serving, directory listing, ETag/304 caching, gzip, static file serving (images/css), sidebar navigation, `--watch` with SSE live reload, CSP nonce
+- Single-file mode (`serve foo.md`): sets baseDir to the file's parent directory, root `/` redirects to `/<filename>`

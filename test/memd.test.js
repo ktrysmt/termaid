@@ -416,7 +416,7 @@ describe('memd serve', () => {
   let serverProcess
 
   beforeAll(async () => {
-    serverProcess = spawn('node', [MAIN, 'serve', '--port', String(PORT), '--dir', __dirname, '--host', '127.0.0.1'], {
+    serverProcess = spawn('node', [MAIN, 'serve', __dirname, '--port', String(PORT), '--host', '127.0.0.1'], {
       stdio: ['pipe', 'pipe', 'pipe'],
     })
     await new Promise((resolve, reject) => {
@@ -444,7 +444,7 @@ describe('memd serve', () => {
 
   it('serve --help shows options', () => {
     const output = runSync(['serve', '--help'])
-    expect(output).toContain('-d, --dir')
+    expect(output).toContain('[path]')
     expect(output).toContain('--port')
     expect(output).toContain('--host')
     expect(output).toContain('--watch')
@@ -655,7 +655,7 @@ describe('memd serve --watch', () => {
   let watchProcess
 
   beforeAll(async () => {
-    watchProcess = spawn('node', [MAIN, 'serve', '--port', String(WATCH_PORT), '--dir', __dirname, '--host', '127.0.0.1', '--watch'], {
+    watchProcess = spawn('node', [MAIN, 'serve', __dirname, '--port', String(WATCH_PORT), '--host', '127.0.0.1', '--watch'], {
       stdio: ['pipe', 'pipe', 'pipe'],
     })
     await new Promise((resolve, reject) => {

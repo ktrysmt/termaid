@@ -707,13 +707,13 @@ async function main() {
   program
     .command('serve')
     .description('Start HTTP server to serve .md files as HTML')
-    .option('-d, --dir <path>', 'directory to serve', '.')
+    .argument('[path]', 'directory or .md file to serve', '.')
     .option('-p, --port <number>', 'port number (0-65535)', Number, 8888)
     .option('--host <string>', 'host to bind', '127.0.0.1')
     .option('--workers <number>', 'number of render workers (default: min(cpus-1, 4))', Number)
     .option('--watch', 'watch for file changes and live-reload')
     .option('--theme <name>', `color theme (env: MEMD_THEME)\n${THEME_NAMES.join(', ')}`, process.env.MEMD_THEME || 'nord')
-    .action(async (options) => {
+    .action(async (servePath, options) => {
       if (!(options.theme in THEME_MAP)) {
         const names = Object.keys(THEME_MAP).join(', ');
         console.error(`Unknown theme: ${options.theme}\nAvailable themes: ${names}`);
@@ -732,14 +732,26 @@ async function main() {
       }
 
       let baseDir;
+      let singleFile = null; // basename of .md file in single-file mode
+      let resolvedServePath;
       try {
-        baseDir = fs.realpathSync(path.resolve(options.dir));
+        resolvedServePath = fs.realpathSync(path.resolve(servePath));
       } catch {
-        console.error(`Directory not found: ${options.dir}`);
+        console.error(`Path not found: ${servePath}`);
         process.exit(1);
       }
-      if (!fs.statSync(baseDir).isDirectory()) {
-        console.error(`Not a directory: ${options.dir}`);
+      const serveStat = fs.statSync(resolvedServePath);
+      if (serveStat.isFile()) {
+        if (!resolvedServePath.endsWith('.md')) {
+          console.error(`Not a .md file: ${servePath}`);
+          process.exit(1);
+        }
+        singleFile = path.basename(resolvedServePath);
+        baseDir = path.dirname(resolvedServePath);
+      } else if (serveStat.isDirectory()) {
+        baseDir = resolvedServePath;
+      } else {
+        console.error(`Not a file or directory: ${servePath}`);
         process.exit(1);
       }
       if (baseDir === '/') {
@@ -1069,6 +1081,14 @@ body:has(.memd-layout) { max-width: none; margin: 0; padding: 0; }
             return;
           }
 
+          // Single-file mode: redirect root to the served file
+          if (singleFile && urlPath === '/') {
+            const target = '/' + encodeURIComponent(singleFile) + parsedUrl.search;
+            res.writeHead(302, { Location: target });
+            res.end();
+            return;
+          }
+
           if (isDotPath(urlPath)) {
             res.writeHead(403, { 'Content-Type': 'text/plain' });
             res.end('Forbidden');
@@ -1277,7 +1297,11 @@ body:has(.memd-layout) { max-width: none; margin: 0; padding: 0; }
         let displayHost = options.host === '0.0.0.0' || options.host === '::' ? 'localhost' : options.host;
         if (displayHost.includes(':')) displayHost = `[${displayHost}]`;
         console.log(`memd serve`);
-        console.log(`  Directory: ${baseDir}`);
+        if (singleFile) {
+          console.log(`  File:      ${path.join(baseDir, singleFile)}`);
+        } else {
+          console.log(`  Directory: ${baseDir}`);
+        }
         console.log(`  Theme:     ${options.theme}`);
         if (options.watch) console.log('  Watch:     enabled');
         console.log(`  URL:       http://${displayHost}:${addr.port}/`);
