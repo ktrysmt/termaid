@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@ktrysmt/beautiful-mermaid':
-        specifier: 1.4.1
-        version: 1.4.1
+        specifier: 1.4.2
+        version: 1.4.2
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
@@ -58,8 +58,8 @@ packages:
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
 
-  '@ktrysmt/beautiful-mermaid@1.4.1':
-    resolution: {integrity: sha512-lQKE74e1UVWhktTn3Ec23mxgcblpSGoI2OxEu4ZGCqEL7hw4HZuPsT73EJJVl1XlRitzbhXMGTW6uO+8SZORQQ==}
+  '@ktrysmt/beautiful-mermaid@1.4.2':
+    resolution: {integrity: sha512-xDBaREKnY7FsfDSuFxP03n9oeQOarUw5nsJJF/k7mLJTAkL0YNgzvfTzkhe4FH/oiDDknRADGdSo07IbfKLEbQ==}
 
   '@napi-rs/wasm-runtime@1.1.1':
     resolution: {integrity: sha512-p64ah1M1ld8xjWv3qbvFwHiFVWrq1yFvV4f7w+mzaqiR4IlSgkqhcRdHwsGgomwzBH51sRY4NEowLxnaBjcW/A==}
@@ -983,7 +983,7 @@ snapshots:
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
-  '@ktrysmt/beautiful-mermaid@1.4.1':
+  '@ktrysmt/beautiful-mermaid@1.4.2':
     dependencies:
       elkjs: 0.11.1
       entities: 7.0.1
