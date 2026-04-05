@@ -388,6 +388,31 @@ describe('memd CLI', () => {
     expect(output).not.toContain('Could not find the language')
   })
 
+  it.concurrent('renders test_cycle_diagram.md (cycle with back-edges)', async () => {
+    const output = await run(
+      ['--no-pager', '--no-color', '--width', '120', 'test/test_cycle_diagram.md'],
+    )
+    // All node labels should be present
+    expect(output).toContain('セッションが長くなる')
+    expect(output).toContain('矛盾が')
+    expect(output).toContain('蓄積している?')
+    expect(output).toContain('/clearで')
+    expect(output).toContain('コンテキスト全消去')
+    expect(output).toContain('整理済みサマリを')
+    expect(output).toContain('新セッションに投入')
+    expect(output).toContain('そのまま継続')
+    expect(output).toContain('精度低下の')
+    expect(output).toContain('兆候あり?')
+    // Edge labels
+    expect(output).toContain('はい')
+    expect(output).toContain('いいえ')
+    // Box-start connector should be directly on the diamond border (no gap)
+    // Before fix: │  ├  (stray ├ with gap after diamond border)
+    // After fix:  ├──  (├ directly on the border with connecting line)
+    expect(output).toContain('├──')
+    expect(output).not.toMatch(/│\s{2,}├/)
+  })
+
   // marked v17 + marked-terminal v7 integration tests
   // Exercises marked-terminal renderer paths that could break on marked major version changes
   describe('marked-terminal renderer integration (marked v17)', () => {
