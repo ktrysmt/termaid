@@ -363,6 +363,18 @@ Note:
 * Each worker loads the Mermaid rendering library in an independent V8 isolate. Each worker consumes approximately 80-120 MB of memory. The default is `min(num_CPUs-1, 4)` workers. In memory-constrained environments, specify `--workers 1`. Recommended memory: 512 MB + (number of workers x 120 MB).
 
 
+## Known Warnings
+
+When installing with `npm install -g memd-cli`, you may see peer dependency warnings like:
+
+```
+npm warn ERESOLVE overriding peer dependency
+npm warn Could not resolve dependency:
+npm warn peer marked@">=1 <16" from marked-terminal@7.3.0
+```
+
+memd-cli uses `marked@17` for its renderer override ordering (later `marked.use()` calls take precedence), which is required for Shiki code highlighting to work correctly with marked-terminal. `marked-terminal@7` has not yet updated its peer dependency range to include `marked@17`, but the combination works correctly and is covered by integration tests.
+
 ## Environment Variables
 
 | Variable | Description | Default |
