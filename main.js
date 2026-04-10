@@ -497,25 +497,24 @@ ${items.join('\n')}
 
 function buildSidebarHtml(dirUrlPath, activeFileName, dirEntries) {
   const items = buildDirEntryItems(dirUrlPath, dirEntries, activeFileName);
-  return `<nav class="memd-sidebar"><ul>\n${items.join('\n')}\n</ul></nav>`;
+  return `<nav class="memd-sidebar"><div class="memd-resizer memd-sidebar-resizer"></div><ul>\n${items.join('\n')}\n</ul></nav>`;
 }
 
 const SIDEBAR_TOGGLE_SVG = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M5.5 2.5v11"/></svg>';
 const OUTLINE_TOGGLE_SVG = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4h10M5 8h8M5 12h8"/></svg>';
 
-function injectOutlineOnly(html, t) {
-  const css = `.memd-layout { display: grid; grid-template-columns: 1fr 220px; min-height: 100vh; }
+function injectOutlineOnly(html) {
+  const css = `.memd-layout { display: grid; grid-template-columns: 1fr var(--memd-outline-w); min-height: 100vh; }
 body:has(.memd-layout) { max-width: none; margin: 0; padding: 0; }
 .memd-content { max-width: 70%; padding: 2rem 1rem; margin: 0 auto; }
 @media (max-width: 1024px) { .memd-content { max-width: 85%; } }
 @media (max-width: 768px) { .memd-content { max-width: 100%; } .memd-layout { grid-template-columns: 1fr; } .memd-outline { display: none !important; } .memd-toggle-outline { display: none; } }
 body.memd-full-width .memd-content { max-width: none; margin: 0; }
 body.memd-outline-hidden .memd-layout { grid-template-columns: 1fr; }
-body.memd-outline-hidden .memd-outline { display: none; }
-.memd-outline { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2.5rem 0.75rem 1rem; border-left: 1px solid ${t.line}; background: color-mix(in srgb, ${t.fg} 3%, ${t.bg}); box-sizing: border-box; }`;
+body.memd-outline-hidden .memd-outline { display: none; }`;
   html = html.replace('<!--memd:head-->', `<style>${css}</style>`);
   html = html.replace('<!--memd:content-->', `<button class="memd-toggle-outline memd-panel-toggle" aria-label="Toggle outline">${OUTLINE_TOGGLE_SVG}</button><div class="memd-layout"><main class="memd-content">`);
-  html = html.replace('<!--/memd:content-->', '</main><nav class="memd-outline"><ul></ul></nav></div>');
+  html = html.replace('<!--/memd:content-->', '</main><nav class="memd-outline"><div class="memd-resizer memd-outline-resizer"></div><ul></ul></nav></div>');
   return html;
 }
 
@@ -641,13 +640,12 @@ async function main() {
 
       if (options.html) {
         // 3a. HTML path
-        const { renderToHTML, initHighlighter, MERMAID_MODAL_SCRIPT, WIDTH_TOGGLE_SCRIPT, OUTLINE_SCRIPT, PANEL_TOGGLE_SCRIPT } = await import('./render-shared.js');
+        const { renderToHTML, initHighlighter, MERMAID_MODAL_SCRIPT, WIDTH_TOGGLE_SCRIPT, OUTLINE_SCRIPT, PANEL_TOGGLE_SCRIPT, RESIZE_SCRIPT } = await import('./render-shared.js');
         await initHighlighter();
         const combined = markdownParts.join('\n\n');
         let html = renderToHTML(combined, diagramColors, themeEntry.shikiTheme);
-        const t = resolveThemeColors(diagramColors);
-        html = injectOutlineOnly(html, t);
-        let inlineScripts = WIDTH_TOGGLE_SCRIPT + PANEL_TOGGLE_SCRIPT + OUTLINE_SCRIPT;
+        html = injectOutlineOnly(html);
+        let inlineScripts = WIDTH_TOGGLE_SCRIPT + PANEL_TOGGLE_SCRIPT + OUTLINE_SCRIPT + RESIZE_SCRIPT;
         if (html.includes('mermaid-diagram')) inlineScripts += MERMAID_MODAL_SCRIPT;
         html = html.replace('<!--memd:scripts-->', `<script>${inlineScripts}</script>`);
         process.stdout.write(html);
@@ -787,7 +785,7 @@ async function main() {
         console.error('Invalid --workers: must be a positive integer');
         process.exit(1);
       }
-      const { MERMAID_MODAL_SCRIPT: mermaidModalScript, WIDTH_TOGGLE_SCRIPT: widthToggleScript, OUTLINE_SCRIPT: outlineScript, PANEL_TOGGLE_SCRIPT: panelToggleScript } = await import('./render-shared.js');
+      const { MERMAID_MODAL_SCRIPT: mermaidModalScript, WIDTH_TOGGLE_SCRIPT: widthToggleScript, OUTLINE_SCRIPT: outlineScript, PANEL_TOGGLE_SCRIPT: panelToggleScript, RESIZE_SCRIPT: resizeScript } = await import('./render-shared.js');
       const poolSize = options.workers ?? Math.min(Math.max(1, os.cpus().length - 1), 4);
       const workerPath = new URL('./render-worker.js', import.meta.url);
       const pool = createRenderPool(workerPath, poolSize, {
@@ -827,8 +825,6 @@ async function main() {
       // prevents inline scripts in markdown from executing, and an attacker would need
       // filesystem access to observe it.
       const sessionNonce = crypto.randomBytes(16).toString('base64');
-
-      const t = resolveThemeColors(diagramColors);
 
       // No rate limiting or connection limit is applied; this is a development-only server
       // not intended for production use. Do not expose to untrusted networks.
@@ -890,23 +886,16 @@ async function main() {
         map.set(key, val);
       }
 
-      const layoutCss = `.memd-layout { display: grid; grid-template-columns: 220px 1fr 220px; min-height: 100vh; }
-.memd-sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2.5rem 1rem 1rem; border-right: 1px solid ${t.line}; background: color-mix(in srgb, ${t.fg} 3%, ${t.bg}); box-sizing: border-box; }
-.memd-sidebar ul { list-style: none; padding: 0; margin: 0; }
-.memd-sidebar li { padding: 0.15rem 0; }
-.memd-sidebar a { color: ${t.accent}; text-decoration: none; display: block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.9rem; }
-.memd-sidebar a:hover { background: color-mix(in srgb, ${t.fg} 5%, ${t.bg}); }
-.memd-sidebar a[aria-current="page"] { background: color-mix(in srgb, ${t.accent} 12%, ${t.bg}); }
+      const layoutCss = `.memd-layout { display: grid; grid-template-columns: var(--memd-sidebar-w) 1fr var(--memd-outline-w); min-height: 100vh; }
 .memd-content { max-width: 70%; padding: 2rem 1rem; margin: 0 auto; }
 @media (max-width: 1024px) { .memd-content { max-width: 85%; } }
 @media (max-width: 768px) { .memd-content { max-width: 100%; } }
 body.memd-full-width .memd-content { max-width: none; margin: 0; }
 body:has(.memd-layout) { max-width: none; margin: 0; padding: 0; }
-.memd-outline { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2.5rem 0.75rem 1rem; border-left: 1px solid ${t.line}; background: color-mix(in srgb, ${t.fg} 3%, ${t.bg}); box-sizing: border-box; }
 body.memd-sidebar-hidden .memd-sidebar { display: none; }
-body.memd-sidebar-hidden .memd-layout { grid-template-columns: 1fr 220px; }
+body.memd-sidebar-hidden .memd-layout { grid-template-columns: 1fr var(--memd-outline-w); }
 body.memd-outline-hidden .memd-outline { display: none; }
-body.memd-outline-hidden .memd-layout { grid-template-columns: 220px 1fr; }
+body.memd-outline-hidden .memd-layout { grid-template-columns: var(--memd-sidebar-w) 1fr; }
 body.memd-sidebar-hidden.memd-outline-hidden .memd-layout { grid-template-columns: 1fr; }
 @media (max-width: 768px) {
   .memd-layout { grid-template-columns: 1fr !important; }
@@ -919,7 +908,7 @@ body.memd-sidebar-hidden.memd-outline-hidden .memd-layout { grid-template-column
       function injectSidebar(html, sidebarHtml) {
         html = html.replace('<!--memd:head-->', `<style>${layoutCss}</style>`);
         html = html.replace('<!--memd:content-->', `<button class="memd-toggle-sidebar memd-panel-toggle" aria-label="Toggle sidebar">${SIDEBAR_TOGGLE_SVG}</button><button class="memd-toggle-outline memd-panel-toggle" aria-label="Toggle outline">${OUTLINE_TOGGLE_SVG}</button><div class="memd-layout">${sidebarHtml}<main class="memd-content">`);
-        html = html.replace('<!--/memd:content-->', '</main><nav class="memd-outline"><ul></ul></nav></div>');
+        html = html.replace('<!--/memd:content-->', '</main><nav class="memd-outline"><div class="memd-resizer memd-outline-resizer"></div><ul></ul></nav></div>');
         return html;
       }
 
@@ -929,7 +918,7 @@ body.memd-sidebar-hidden.memd-outline-hidden .memd-layout { grid-template-column
           res.end();
           return;
         }
-        let scripts = widthToggleScript + panelToggleScript + outlineScript;
+        let scripts = widthToggleScript + panelToggleScript + outlineScript + resizeScript;
         if (options.watch) {
           scripts += 'new EventSource("/_memd/events").onmessage=function(){location.reload()};';
         }
@@ -1076,7 +1065,7 @@ body.memd-sidebar-hidden.memd-outline-hidden .memd-layout { grid-template-column
           }
           html = injectSidebar(rawHtml, sidebarHtml);
         } else {
-          html = injectOutlineOnly(rawHtml, t);
+          html = injectOutlineOnly(rawHtml);
         }
         return { html, etag, hasSidebar, hasMermaid };
       }
