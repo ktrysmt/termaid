@@ -1,0 +1,254 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`memd CLI > --html layout snapshot > --html layout skeleton matches snapshot 1`] = `
+"CSS: body { background, color, font-family, line-height, max-width, margin, padding }
+CSS: body { max-width }
+CSS: body { max-width }
+CSS: body.memd-full-width { max-width, margin }
+CSS: .memd-width-toggle { position, top, left, z-index, display, border-radius, overflow, border, font-size }
+CSS: .memd-wt-btn { background, border, color, padding, cursor, font-size, display, align-items, gap, line-height }
+CSS: .memd-wt-btn + .memd-wt-btn { border-left }
+CSS: .memd-wt-btn:hover { background }
+CSS: .memd-wt-btn.active { background, color }
+CSS: .memd-wt-btn svg { width, height, flex-shrink }
+CSS: a { color }
+CSS: hr { border-color }
+CSS: blockquote { border-left, color, padding-left }
+CSS: svg { max-width, height }
+CSS: .mermaid-diagram { cursor, text-align }
+CSS: .mermaid-modal { position, inset, background, z-index, display, align-items, justify-content, cursor, padding }
+CSS: .mermaid-modal svg { max-width, max-height }
+CSS: pre { background, padding, border-radius, overflow-x, border }
+CSS: code { font-family, font-size, color, background, padding, border-radius }
+CSS: pre code { color, background, padding, border-radius, font-size }
+CSS: pre.shiki { padding, border-radius, overflow-x, border }
+CSS: pre.shiki code { font-size }
+CSS: table { border-collapse }
+CSS: th, td { border, padding }
+CSS: th { background }
+CSS: .mermaid-error { background, border, color, padding, border-radius, overflow-x, white-space }
+CSS: :root { --memd-sidebar-w, --memd-outline-w }
+CSS: .memd-sidebar, .memd-outline { position, top, height, overflow-y, padding, background, box-sizing, font-size }
+CSS: .memd-sidebar { border-right }
+CSS: .memd-outline { border-left }
+CSS: .memd-sidebar ul, .memd-outline ul { list-style, padding, margin }
+CSS: .memd-sidebar li, .memd-outline li { padding }
+CSS: .memd-sidebar a, .memd-outline a { display, padding, border-radius, color, text-decoration, white-space, overflow, text-overflow }
+CSS: .memd-sidebar a:hover, .memd-outline a:hover { color, background }
+CSS: .memd-sidebar a[aria-current="page"], .memd-outline a.active { color, background }
+CSS: .memd-outline li[data-level="2"] { padding-left }
+CSS: .memd-outline li[data-level="3"] { padding-left }
+CSS: .memd-outline li[data-level="4"] { padding-left }
+CSS: .memd-outline li[data-level="5"] { padding-left }
+CSS: .memd-outline li[data-level="6"] { padding-left }
+CSS: .memd-resizer { position, top, bottom, width, cursor, z-index, background, transition }
+CSS: .memd-sidebar-resizer { right }
+CSS: .memd-outline-resizer { left }
+CSS: .memd-resizer:hover, body.memd-resizing .memd-resizer { background }
+CSS: body.memd-resizing, body.memd-resizing * { cursor, user-select }
+CSS: .memd-resizer { display }
+CSS: .memd-panel-toggle { position, top, z-index, background, border, color, cursor, border-radius, padding, display, align-items, justify-content, line-height }
+CSS: body:has(.memd-breadcrumb) .memd-panel-toggle { top }
+CSS: .memd-breadcrumb { position, top, left, right, z-index, background, border-bottom, padding, font-size, color, white-space, overflow, text-overflow, backdrop-filter }
+CSS: body:has(.memd-breadcrumb) { --memd-bc-h }
+CSS: body:has(.memd-breadcrumb) .memd-sidebar, body:has(.memd-breadcrumb) .memd-outline { top, height }
+CSS: body:has(.memd-breadcrumb) .memd-layout { padding-top }
+CSS: .memd-breadcrumb a { color, text-decoration }
+CSS: .memd-breadcrumb a:hover { color, text-decoration }
+CSS: .memd-bc-current { color }
+CSS: .memd-bc-sep { margin, color }
+CSS: .memd-bc-root { display }
+CSS: .memd-bc-root:hover .memd-bc-sep { color }
+CSS: .memd-panel-toggle:hover { background, color }
+CSS: .memd-panel-toggle svg { width, height }
+CSS: .memd-toggle-sidebar { left }
+CSS: .memd-toggle-outline { right }
+CSS: .memd-layout { display, grid-template-columns, min-height }
+CSS: body:has(.memd-layout) { max-width, margin, padding }
+CSS: .memd-content { max-width, padding, margin }
+CSS: .memd-content { max-width }
+CSS: .memd-content { max-width }
+CSS: .memd-layout { grid-template-columns }
+CSS: .memd-outline { display }
+CSS: .memd-toggle-outline { display }
+CSS: body.memd-full-width .memd-content { max-width, margin }
+CSS: body.memd-outline-hidden .memd-layout { grid-template-columns }
+CSS: body.memd-outline-hidden .memd-outline { display }
+CSS: text { font-family }
+CSS: svg { /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text, --_text-sec, --_text-muted, --_text-faint, --_line, --_arrow, --_node-fill, --_node-stroke, --_group-fill, --_group-hdr, --_inner-stroke, --_key-badge }
+DOM: <html>
+DOM: <head>
+DOM: <meta>
+DOM: <meta>
+DOM: <title>
+DOM: <body>
+DOM: <div.memd-width-toggle>
+DOM: <button.memd-wt-btn>
+DOM: <svg>
+DOM: <button.memd-wt-btn>
+DOM: <svg>
+DOM: <button.memd-toggle-outline.memd-panel-toggle>
+DOM: <svg>
+DOM: <div.memd-layout>
+DOM: <main.memd-content>
+DOM: <h1>
+DOM: <p>
+DOM: <strong>
+DOM: <div.mermaid-diagram>
+DOM: <svg>
+DOM: <p>
+DOM: <nav.memd-outline>
+DOM: <div.memd-resizer.memd-outline-resizer>
+DOM: <ul>
+DOM: <script>"
+`;
+
+exports[`memd serve > serve layout skeleton matches snapshot 1`] = `
+"CSS: body { background, color, font-family, line-height, max-width, margin, padding }
+CSS: body { max-width }
+CSS: body { max-width }
+CSS: body.memd-full-width { max-width, margin }
+CSS: .memd-width-toggle { position, top, left, z-index, display, border-radius, overflow, border, font-size }
+CSS: .memd-wt-btn { background, border, color, padding, cursor, font-size, display, align-items, gap, line-height }
+CSS: .memd-wt-btn + .memd-wt-btn { border-left }
+CSS: .memd-wt-btn:hover { background }
+CSS: .memd-wt-btn.active { background, color }
+CSS: .memd-wt-btn svg { width, height, flex-shrink }
+CSS: a { color }
+CSS: hr { border-color }
+CSS: blockquote { border-left, color, padding-left }
+CSS: svg { max-width, height }
+CSS: .mermaid-diagram { cursor, text-align }
+CSS: .mermaid-modal { position, inset, background, z-index, display, align-items, justify-content, cursor, padding }
+CSS: .mermaid-modal svg { max-width, max-height }
+CSS: pre { background, padding, border-radius, overflow-x, border }
+CSS: code { font-family, font-size, color, background, padding, border-radius }
+CSS: pre code { color, background, padding, border-radius, font-size }
+CSS: pre.shiki { padding, border-radius, overflow-x, border }
+CSS: pre.shiki code { font-size }
+CSS: table { border-collapse }
+CSS: th, td { border, padding }
+CSS: th { background }
+CSS: .mermaid-error { background, border, color, padding, border-radius, overflow-x, white-space }
+CSS: :root { --memd-sidebar-w, --memd-outline-w }
+CSS: .memd-sidebar, .memd-outline { position, top, height, overflow-y, padding, background, box-sizing, font-size }
+CSS: .memd-sidebar { border-right }
+CSS: .memd-outline { border-left }
+CSS: .memd-sidebar ul, .memd-outline ul { list-style, padding, margin }
+CSS: .memd-sidebar li, .memd-outline li { padding }
+CSS: .memd-sidebar a, .memd-outline a { display, padding, border-radius, color, text-decoration, white-space, overflow, text-overflow }
+CSS: .memd-sidebar a:hover, .memd-outline a:hover { color, background }
+CSS: .memd-sidebar a[aria-current="page"], .memd-outline a.active { color, background }
+CSS: .memd-outline li[data-level="2"] { padding-left }
+CSS: .memd-outline li[data-level="3"] { padding-left }
+CSS: .memd-outline li[data-level="4"] { padding-left }
+CSS: .memd-outline li[data-level="5"] { padding-left }
+CSS: .memd-outline li[data-level="6"] { padding-left }
+CSS: .memd-resizer { position, top, bottom, width, cursor, z-index, background, transition }
+CSS: .memd-sidebar-resizer { right }
+CSS: .memd-outline-resizer { left }
+CSS: .memd-resizer:hover, body.memd-resizing .memd-resizer { background }
+CSS: body.memd-resizing, body.memd-resizing * { cursor, user-select }
+CSS: .memd-resizer { display }
+CSS: .memd-panel-toggle { position, top, z-index, background, border, color, cursor, border-radius, padding, display, align-items, justify-content, line-height }
+CSS: body:has(.memd-breadcrumb) .memd-panel-toggle { top }
+CSS: .memd-breadcrumb { position, top, left, right, z-index, background, border-bottom, padding, font-size, color, white-space, overflow, text-overflow, backdrop-filter }
+CSS: body:has(.memd-breadcrumb) { --memd-bc-h }
+CSS: body:has(.memd-breadcrumb) .memd-sidebar, body:has(.memd-breadcrumb) .memd-outline { top, height }
+CSS: body:has(.memd-breadcrumb) .memd-layout { padding-top }
+CSS: .memd-breadcrumb a { color, text-decoration }
+CSS: .memd-breadcrumb a:hover { color, text-decoration }
+CSS: .memd-bc-current { color }
+CSS: .memd-bc-sep { margin, color }
+CSS: .memd-bc-root { display }
+CSS: .memd-bc-root:hover .memd-bc-sep { color }
+CSS: .memd-panel-toggle:hover { background, color }
+CSS: .memd-panel-toggle svg { width, height }
+CSS: .memd-toggle-sidebar { left }
+CSS: .memd-toggle-outline { right }
+CSS: .memd-layout { display, grid-template-columns, min-height }
+CSS: .memd-content { max-width, padding, margin }
+CSS: .memd-content { max-width }
+CSS: .memd-content { max-width }
+CSS: body.memd-full-width .memd-content { max-width, margin }
+CSS: body:has(.memd-layout) { max-width, margin, padding }
+CSS: body.memd-sidebar-hidden .memd-sidebar { display }
+CSS: body.memd-sidebar-hidden .memd-layout { grid-template-columns }
+CSS: body.memd-outline-hidden .memd-outline { display }
+CSS: body.memd-outline-hidden .memd-layout { grid-template-columns }
+CSS: body.memd-sidebar-hidden.memd-outline-hidden .memd-layout { grid-template-columns }
+CSS: .memd-layout { grid-template-columns }
+CSS: .memd-sidebar { position, top, left, width, height, z-index }
+CSS: body.memd-sidebar-hidden .memd-sidebar { display }
+CSS: .memd-outline { display }
+CSS: .memd-toggle-outline { display }
+CSS: .memd-content { padding-top }
+CSS: text { font-family }
+CSS: svg { /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text, --_text-sec, --_text-muted, --_text-faint, --_line, --_arrow, --_node-fill, --_node-stroke, --_group-fill, --_group-hdr, --_inner-stroke, --_key-badge }
+DOM: <html>
+DOM: <head>
+DOM: <meta>
+DOM: <meta>
+DOM: <title>
+DOM: <body>
+DOM: <div.memd-width-toggle>
+DOM: <button.memd-wt-btn>
+DOM: <svg>
+DOM: <button.memd-wt-btn>
+DOM: <svg>
+DOM: <button.memd-toggle-sidebar.memd-panel-toggle>
+DOM: <svg>
+DOM: <button.memd-toggle-outline.memd-panel-toggle>
+DOM: <svg>
+DOM: <header.memd-breadcrumb>
+DOM: <a.memd-bc-root>
+DOM: <span.memd-bc-sep>
+DOM: <span.memd-bc-current>
+DOM: <div.memd-layout>
+DOM: <nav.memd-sidebar>
+DOM: <div.memd-resizer.memd-sidebar-resizer>
+DOM: <ul>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <li>
+DOM: <a>
+DOM: <main.memd-content>
+DOM: <h1>
+DOM: <p>
+DOM: <strong>
+DOM: <div.mermaid-diagram>
+DOM: <svg>
+DOM: <p>
+DOM: <nav.memd-outline>
+DOM: <div.memd-resizer.memd-outline-resizer>
+DOM: <ul>
+DOM: <script>"
+`;

@@ -172,6 +172,17 @@ th { background: color-mix(in srgb, ${t.fg} 5%, ${t.bg}); }
 body.memd-resizing, body.memd-resizing * { cursor: col-resize !important; user-select: none !important; }
 @media (max-width: 768px) { .memd-resizer { display: none; } }
 .memd-panel-toggle { position: fixed; top: 0.5rem; z-index: 11; background: color-mix(in srgb, ${t.fg} 8%, ${t.bg}); border: 1px solid ${t.line}; color: ${t.muted}; cursor: pointer; border-radius: 4px; padding: 0.25rem; display: flex; align-items: center; justify-content: center; line-height: 0; }
+body:has(.memd-breadcrumb) .memd-panel-toggle { top: 2.3rem; }
+.memd-breadcrumb { position: fixed; top: 0; left: 0; right: 0; z-index: 10; background: color-mix(in srgb, ${t.fg} 3%, ${t.bg}); border-bottom: 1px solid ${t.line}; padding: 0.3rem 1rem; font-size: 0.8rem; color: ${t.muted}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; backdrop-filter: blur(8px); }
+body:has(.memd-breadcrumb) { --memd-bc-h: 1.9rem; }
+body:has(.memd-breadcrumb) .memd-sidebar, body:has(.memd-breadcrumb) .memd-outline { top: var(--memd-bc-h); height: calc(100vh - var(--memd-bc-h)); }
+body:has(.memd-breadcrumb) .memd-layout { padding-top: var(--memd-bc-h); }
+.memd-breadcrumb a { color: ${t.muted}; text-decoration: none; }
+.memd-breadcrumb a:hover { color: ${t.accent}; text-decoration: underline; }
+.memd-bc-current { color: ${t.fg}; }
+.memd-bc-sep { margin: 0 0.4em; color: ${t.line}; }
+.memd-bc-root { display: inline; }
+.memd-bc-root:hover .memd-bc-sep { color: ${t.accent}; }
 .memd-panel-toggle:hover { background: color-mix(in srgb, ${t.fg} 15%, ${t.bg}); color: ${t.fg}; }
 .memd-panel-toggle svg { width: 16px; height: 16px; }
 .memd-toggle-sidebar { left: 0.5rem; }

@@ -452,17 +452,17 @@ function buildDirEntryItems(urlPath, dirEntries, activeFileName) {
   const mdFiles = visible.filter(e => e.isFile() && e.name.endsWith('.md')).map(e => e.name).sort();
   const items = [];
   if (urlPath !== '/') {
-    items.push('<li><a href="../">../</a></li>');
+    items.push('<li><a href="../" title="../">../</a></li>');
   }
   const dirNames = new Set(dirs);
   for (const d of dirs) {
-    items.push(`<li><a href="${encodeURIComponent(d)}/">${escapeHtml(d)}/</a></li>`);
+    items.push(`<li><a href="${encodeURIComponent(d)}/" title="${escapeHtml(d)}">${escapeHtml(d)}/</a></li>`);
   }
   for (const f of mdFiles) {
     const base = f.slice(0, -3);
     const href = dirNames.has(base) ? encodeURIComponent(f) : encodeURIComponent(base);
     const attrs = activeFileName === f ? ' aria-current="page"' : '';
-    items.push(`<li><a href="${href}"${attrs}>${escapeHtml(f)}</a></li>`);
+    items.push(`<li><a href="${href}" title="${escapeHtml(f)}"${attrs}>${escapeHtml(f)}</a></li>`);
   }
   return items;
 }
@@ -493,6 +493,26 @@ ${items.join('\n')}
 <!--memd:scripts-->
 </body>
 </html>`;
+}
+
+function buildBreadcrumbHtml(urlPath) {
+  // urlPath e.g. "/foo/bar/baz.md" or "/foo/bar/"
+  // Output: "/ foo / bar / baz" with clickable segments
+  const sep = '<span class="memd-bc-sep">/</span>';
+  const segments = urlPath.replace(/\/$/, '').split('/').filter(Boolean);
+  const parts = [];
+  let href = '/';
+  for (let i = 0; i < segments.length; i++) {
+    href += encodeURIComponent(segments[i]) + (i < segments.length - 1 ? '/' : '');
+    const label = escapeHtml(decodeURIComponent(segments[i]));
+    if (i === segments.length - 1) {
+      parts.push(`<span class="memd-bc-current">${label}</span>`);
+    } else {
+      parts.push(`<a href="${href}/">${label}</a>`);
+    }
+  }
+  // "/ segment1 / segment2 / current" — leading slash links to root
+  return `<header class="memd-breadcrumb"><a href="/" class="memd-bc-root">${sep}</a>${parts.join(sep)}</header>`;
 }
 
 function buildSidebarHtml(dirUrlPath, activeFileName, dirEntries) {
@@ -905,9 +925,10 @@ body.memd-sidebar-hidden.memd-outline-hidden .memd-layout { grid-template-column
   .memd-toggle-outline { display: none; }
   .memd-content { padding-top: 3rem; }
 }`;
-      function injectSidebar(html, sidebarHtml) {
+      function injectSidebar(html, sidebarHtml, urlPath) {
+        const breadcrumbHtml = urlPath ? buildBreadcrumbHtml(urlPath) : '';
         html = html.replace('<!--memd:head-->', `<style>${layoutCss}</style>`);
-        html = html.replace('<!--memd:content-->', `<button class="memd-toggle-sidebar memd-panel-toggle" aria-label="Toggle sidebar">${SIDEBAR_TOGGLE_SVG}</button><button class="memd-toggle-outline memd-panel-toggle" aria-label="Toggle outline">${OUTLINE_TOGGLE_SVG}</button><div class="memd-layout">${sidebarHtml}<main class="memd-content">`);
+        html = html.replace('<!--memd:content-->', `<button class="memd-toggle-sidebar memd-panel-toggle" aria-label="Toggle sidebar">${SIDEBAR_TOGGLE_SVG}</button><button class="memd-toggle-outline memd-panel-toggle" aria-label="Toggle outline">${OUTLINE_TOGGLE_SVG}</button>${breadcrumbHtml}<div class="memd-layout">${sidebarHtml}<main class="memd-content">`);
         html = html.replace('<!--/memd:content-->', '</main><nav class="memd-outline"><div class="memd-resizer memd-outline-resizer"></div><ul></ul></nav></div>');
         return html;
       }
@@ -1063,7 +1084,7 @@ body.memd-sidebar-hidden.memd-outline-hidden .memd-layout { grid-template-column
             sidebarHtml = buildSidebarHtml(dirUrlPath, activeFile, entries);
             lruSet(sidebarHtmlCache, sidebarKey, sidebarHtml, SIDEBAR_CACHE_MAX);
           }
-          html = injectSidebar(rawHtml, sidebarHtml);
+          html = injectSidebar(rawHtml, sidebarHtml, urlPath);
         } else {
           html = injectOutlineOnly(rawHtml);
         }

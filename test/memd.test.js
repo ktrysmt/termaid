@@ -23,10 +23,54 @@ function runSync(args) {
   return execFileSync('node', [MAIN, ...args], { encoding: 'utf-8', timeout: 15000 })
 }
 
+// Extract layout skeleton from HTML for stable snapshot comparison.
+// Strips volatile content (SVG internals, hex colors, script bodies, text nodes)
+// and keeps CSS selectors+property-names and DOM structure (tags, classes).
+function extractLayoutSkeleton(html) {
+  const lines = []
+
+  // 1. CSS selectors and their property names (not values — values contain theme colors)
+  const styleBlocks = html.match(/<style>([\s\S]*?)<\/style>/g) || []
+  for (const block of styleBlocks) {
+    const css = block.replace(/<\/?style>/g, '')
+    const ruleRe = /([^{}]+)\{([^{}]+)\}/g
+    let m
+    while ((m = ruleRe.exec(css)) !== null) {
+      const selector = m[1].trim()
+      if (selector.startsWith('@')) continue
+      const props = m[2].split(';')
+        .map(p => p.split(':')[0].trim())
+        .filter(Boolean)
+        .join(', ')
+      lines.push(`CSS: ${selector} { ${props} }`)
+    }
+  }
+
+  // 2. DOM structure (opening tags with class/id attributes)
+  const stripped = html
+    .replace(/<style>[\s\S]*?<\/style>/g, '')
+    .replace(/<script[\s\S]*?<\/script>/g, '<script/>')
+    .replace(/<svg[\s\S]*?<\/svg>/g, '<svg/>')
+  const tagRe = /<([\w-]+)([^>]*)>/g
+  let t
+  while ((t = tagRe.exec(stripped)) !== null) {
+    const tag = t[1]
+    const attrs = t[2]
+    const cls = (attrs.match(/class="([^"]+)"/) || [])[1] || ''
+    const id = (attrs.match(/\bid="([^"]+)"/) || [])[1] || ''
+    const parts = [tag]
+    if (cls) parts.push(`.${cls.split(/\s+/).join('.')}`)
+    if (id) parts.push(`#${id}`)
+    lines.push(`DOM: <${parts.join('')}>`)
+  }
+
+  return lines.join('\n')
+}
+
 describe('memd CLI', () => {
   it.concurrent('--version', async () => {
     const output = await run(['-v'])
-    expect(output).toContain('3.6.2')
+    expect(output).toContain('3.6.3')
   })
 
   it.concurrent('--help', async () => {
@@ -235,6 +279,15 @@ describe('memd CLI', () => {
     it('--html --theme dracula highlights code with shiki', () => {
       const output = runSync(['--html', '--theme', 'dracula', 'test/test-highlight.md'])
       expect(output).toContain('class="shiki')
+    })
+  })
+
+  // --html layout snapshot regression tests
+  describe('--html layout snapshot', () => {
+    it('--html layout skeleton matches snapshot', () => {
+      const output = runSync(['--html', 'test/test1.md'])
+      const skeleton = extractLayoutSkeleton(output)
+      expect(skeleton).toMatchSnapshot()
     })
   })
 
@@ -815,6 +868,37 @@ describe('memd serve', () => {
     expect(body).toContain('memd-sidebar')
     expect(body).toContain('memd-layout')
     expect(body).toContain('aria-current="page"')
+  })
+
+  it('sidebar links have title attribute with filename', async () => {
+    const res = await fetch(`${BASE_URL}/test1.md`)
+    const body = await res.text()
+    expect(body).toContain('title="test1.md"')
+    expect(body).toContain('title="test2.md"')
+  })
+
+  it('.md file response contains breadcrumb', async () => {
+    const res = await fetch(`${BASE_URL}/test1`)
+    const body = await res.text()
+    const bcMatch = body.match(/<header class="memd-breadcrumb">[\s\S]*?<\/header>/)
+    expect(bcMatch).not.toBeNull()
+    const bc = bcMatch[0]
+    expect(bc).toContain('memd-bc-sep')
+    expect(bc).toContain('<a href="/" class="memd-bc-root">')
+    expect(bc).toContain('memd-bc-current')
+  })
+
+  it('sidebar and outline use position sticky', async () => {
+    const res = await fetch(`${BASE_URL}/test1`)
+    const body = await res.text()
+    expect(body).toContain('.memd-sidebar, .memd-outline { position: sticky;')
+  })
+
+  it('serve layout skeleton matches snapshot', async () => {
+    const res = await fetch(`${BASE_URL}/test1`)
+    const html = await res.text()
+    const skeleton = extractLayoutSkeleton(html)
+    expect(skeleton).toMatchSnapshot()
   })
 
   // isDotPath design: '..' allowed by isDotPath, caught by resolveServePath
